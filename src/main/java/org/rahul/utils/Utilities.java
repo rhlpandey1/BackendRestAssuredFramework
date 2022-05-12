@@ -22,6 +22,20 @@ public class Utilities {
         }
         return requestSpecification;
     }
+    public RequestSpecification setRequestSpecificationGET(String placeId) throws IOException {
+
+        if(requestSpecification==null){
+            PrintStream log = new PrintStream(new FileOutputStream("log.txt"));
+            requestSpecification = new RequestSpecBuilder().setBaseUri(getProperties("baseURI")).
+                    setContentType("application/json").addQueryParam("key", "qaclick123")
+                    .addQueryParam("place_id", placeId)
+                    .addFilter(RequestLoggingFilter.logRequestTo(log))
+                    .addFilter(ResponseLoggingFilter.logResponseTo(log)).build();
+
+            return requestSpecification;
+        }
+        return requestSpecification;
+    }
 
     public static String getProperties(String key) throws IOException {
         String filePath=System.getProperty("user.dir")+"/src/test/resources/"+"config.properties";

@@ -1,10 +1,12 @@
 package org.rahul.tests;
 
 import enums.APIResources;
+import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.rahul.pojos.AddPlaceResponse;
 import org.rahul.utils.ExcelUtility;
+import org.rahul.utils.Utilities;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -34,7 +36,20 @@ public class AddPlaceTest {
         Assert.assertEquals(addPlaceResponse.getStatus(),status);
         Assert.assertEquals(addPlaceResponse.getScope(),scope);
     }
-
+    @Test(dependsOnMethods = "validateAddPlace")
+    public void validateGetPlace(){
+        RequestSpecification requestSpecification;
+        CommonMethods commonMethods=new CommonMethods();
+        Utilities utilities=new Utilities();
+        try {
+            requestSpecification = RestAssured.given().relaxedHTTPSValidation().spec(utilities.setRequestSpecificationGET(placeId));
+            APIResources resourceAPI=APIResources.valueOf("GetPlaceAPi");
+            response=commonMethods.callTheApi(requestSpecification,resourceAPI.getResource(),"GET");
+            System.out.println(response.asString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     @DataProvider(name="addPlaceData")
     public Object[][] getData() throws IOException {
         //get data from excel
