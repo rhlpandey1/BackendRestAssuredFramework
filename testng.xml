@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="All Test Suite">
+    <test verbose="2" preserve-order="true" name="/Users/rahul.pandey/IdeaProjects/BackendRestAssuredFramework">
+        <classes>
+            <class name="org.rahul.tests.AddPlaceTest">
+                <methods>
+                    <include name="validateAddPlace"/>
+                    <include name="validateGetPlace"/>
+                </methods>
+            </class>
+            <class name="org.rahul.tests.AuthorizationTest">
+                <methods>
+                    <include name="authTest"/>
+                </methods>
+            </class>
+            <class name="org.rahul.tests.GoogleApiAddPlaceTest">
+                <methods>
+                    <include name="validateAddPlace"/>
+                    <include name="validateGetPlace"/>
+                </methods>
+            </class>
+            <class name="test.TestPojo">
+                <methods>
+                    <include name="testPojoResp"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

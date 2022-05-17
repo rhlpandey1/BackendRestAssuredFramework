@@ -2,6 +2,7 @@ package org.rahul.tests;
 
 import enums.APIResources;
 import io.restassured.RestAssured;
+import io.restassured.authentication.PreemptiveBasicAuthScheme;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -11,20 +12,23 @@ import org.rahul.utils.Utilities;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import payloads.GoogleApiPayloads;
 import reusables.CommonMethods;
 
 import java.io.IOException;
 
-public class AddPlaceTest {
+public class GoogleApiAddPlaceTest {
     RequestSpecification requestSpecification;
     Response response;
     public static String placeId;
     @Test(dataProvider = "addPlaceData")
     public void validateAddPlace(String name,String language,String address,String statusCode,String status,String	scope){
-        CommonMethods commonMethods=new CommonMethods();
         AddPlaceResponse addPlaceResponse= null;
+        Utilities utilities=new Utilities();
+        CommonMethods commonMethods=new CommonMethods();
         try {
-            requestSpecification =commonMethods.getAddPlacePayload(name,language,address);
+            requestSpecification = RestAssured.given().relaxedHTTPSValidation().spec(utilities.setRequestSpecification())
+                    .body(GoogleApiPayloads.setAddPlaceValues(name,language,address));
             APIResources resourceAPI=APIResources.valueOf("AddPlaceAPi");
             response=commonMethods.callTheApi(requestSpecification,resourceAPI.getResource(),"POST");
             addPlaceResponse=response.as(AddPlaceResponse.class);
@@ -36,12 +40,24 @@ public class AddPlaceTest {
         Assert.assertEquals(response.getStatusCode(),Integer.parseInt(statusCode));
         Assert.assertEquals(addPlaceResponse.getStatus(),status);
         Assert.assertEquals(addPlaceResponse.getScope(),scope);
+        String server= response.header("Server");
+        String accessControl= response.header("Access-Control-Max-Age");
+        String connection= response.header("Connection");
+        Assert.assertEquals(server,"Apache/2.4.41 (Ubuntu)");
+        Assert.assertEquals(accessControl,"3600");
+        Assert.assertEquals(connection,"Keep-Alive");
+
     }
     @Test(dependsOnMethods = "validateAddPlace")
     public void validateGetPlace(){
         RequestSpecification requestSpecification;
         CommonMethods commonMethods=new CommonMethods();
         Utilities utilities=new Utilities();
+        //authentication demo
+        /*PreemptiveBasicAuthScheme authScheme=new PreemptiveBasicAuthScheme();
+        authScheme.setUserName("Rahul");
+        authScheme.setPassword("Rahul123");
+        RestAssured.authentication=authScheme;*/
         try {
             requestSpecification = RestAssured.given().relaxedHTTPSValidation().spec(utilities.setRequestSpecificationGET(placeId));
             APIResources resourceAPI=APIResources.valueOf("GetPlaceAPi");
